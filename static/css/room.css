@@ -1,0 +1,132 @@
+body {
+    background-color: #202124;
+    color: white;
+}
+
+* {
+    font-family: Arial;
+}
+
+
+#content {
+    filter: blur(50px);
+}
+
+video {
+    border-radius: 7px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-left: 5px solid #01D982;
+    border-bottom: 5px solid #01D982;
+}
+
+#choose_username {
+    position: fixed;
+    background-color: #202124;
+    top: 38vh;
+    padding: 40px;
+    border-radius: 10px;
+    color: white;
+}
+
+#choose_username input, #choose_username button{
+    border-radius: 5px;
+    border: 0px;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.075);
+    text-transform: capitalize;
+    color: white;
+    border-left: 2px solid #01D982;
+    border-bottom: 2px solid #01D982;
+    margin-right: 10px;
+}
+
+#choose_username button{
+    background-color:#01D982;
+    color: #202124;
+    border: 0;
+}
+
+.user {
+    border-radius: 100px;
+    border: 2px solid #01D982;
+    text-align: center;
+    padding: 30px;
+    padding-bottom: 20px;
+    padding-top: 20px;
+    margin: 10px;
+    margin-left: 17px;
+}
+
+#leave {
+    background-color: #01D982;
+    color: #202124;
+    border-radius: 10px;
+    border: 0;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-left: 10px;
+}
+
+#invite {
+    padding: 10px;
+    width: 35px;
+    background-color: #01D982;
+    border-radius: 100px;
+    border: 0;
+}
+
+#leaveContainer {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+#users {
+    display: flex;
+    justify-content: center;
+} 
+
+#playerUrl input{
+    padding: 10px;
+    background-color: transparent;
+    color: white;
+    width: 300px;
+    border: 2px solid #01D982;
+    border-radius: 10px;
+
+}
+
+#playerUrl button {
+    background-color: transparent;
+    color: #01D982;
+    margin-left: 10px;
+    border: 0;
+
+}
+
+
+
+
+*:focus {
+    outline:none;
+}
+
+@keyframes blur {
+
+    0% {
+        overflow-x: hidden;
+        filter: blur(10px);
+    }
+
+    70% {
+        
+    }
+
+    100% {
+        filter: blur(0px);
+        
+    }
+}

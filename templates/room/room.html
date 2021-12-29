@@ -1,0 +1,206 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type= "text/css" href="{{ url_for('static',filename='css/room.css') }}">
+    <title>Document</title>
+</head>
+<body>
+    <div id="content">
+        <p id="actions"></p>
+        <div style="display: flex; justify-content: center;">
+            <div style="display: none;" id="playerUrl">
+                <input id="url_holder" placeholder="https://www.youtube.com/watch?v=Y7Bquwr8mQE">
+                <button id="url_button" onclick="requestVideoChange()"><strong>></strong></button>
+                <button onclick="urlVisible(this)"><strong>x</strong></button>
+            </div>
+        </div>
+        <br>
+        <video id="video_player" controls="" autoplay="" width="65%" src=""></video>
+        <p style="display: none;" id="room_code">{{ room }}</p>
+        <span  style="display: none;" id="owner"></span>
+        <p style="display: none;" id="user"></p>   
+        <div id="users">
+            <p style="display: none;" class="user" id="cloneMe">EX</p>
+        </div>
+        <div id="leaveContainer">
+            <button id="invite" onclick="alert(window.location.href)" value="{{ room }}">+</button>
+            <button id="leave">Leave</button>
+        </div>
+        
+    </div>
+    <div style="display: flex; justify-content: center;">
+        <div id="choose_username">
+            <input id="username" autocomplete="off" autocapitalize="on" maxlength="20" placeholder="Username">
+            <button onclick="setName()">Continue</button>
+        </div>
+    </div>
+    
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script>
+    const socket = io();
+    const videoPlayer = document.getElementById("video_player");
+    const roomValidation = document.getElementById("room_code");
+    var q = "paused";
+
+    var t = false
+
+    function urlVisible(x){
+        if (t==false) {
+            document.getElementById("url_holder").style.display = "none";
+            document.getElementById("url_button").style.display = "none";
+            x.innerHTML = "-"
+            t=true
+        }else{
+            document.getElementById("url_holder").style.display = "block";
+            document.getElementById("url_button").style.display = "block";
+            x.innerHTML = "x"
+            t=false
+        }
+    }
+
+    socket.on("connect", function() {
+        console.log("Connecting.")
+    })
+
+
+    
+
+    socket.on("pause_request", function(x) {
+        console.log("Pausing. " + x.user)
+        document.getElementById("actions").innerHTML = x.user + " requested to pause."
+        document.getElementById("video_player").pause()
+        document.getElementById("actions").innerHTML = x.user + " paused."
+        console.log("Paused. " + x.user)
+        q = "paused"
+    })
+
+    socket.on("play_request", function(x) {
+        console.log("Playing. " + x.user)
+        document.getElementById("actions").innerHTML = x.user + " requested to play."
+        document.getElementById("video_player").play()
+        document.getElementById("actions").innerHTML = x.user + " started playing."
+        console.log("Played. " + x.user)
+        q = "played"
+        
+    })
+
+    socket.on("disconnect", function() {
+        console.log("Disconnecting.")
+        socket.emit("disconnects", {"room": document.getElementById("room_code").innerHTML, "user": document.getElementById("user").innerHTML})
+    })
+
+    var j = false;
+
+    function setName(){
+        const username = document.getElementById("username").value
+        document.getElementById("user").innerHTML = username;
+        document.getElementById("choose_username").style.display = "none";
+        socket.emit("join", {"room": document.getElementById("room_code").innerHTML, "user": username})
+        j = true;
+
+        document.getElementById("content").style.animation = "blur 2s 1";
+        document.getElementById("content").style.filter = "blur(0px)";
+
+        setTimeout(function(){
+            if (document.getElementById("user").innerHTML == document.getElementById("owner").innerHTML){
+                document.getElementById("playerUrl").style.display = "block";
+            }
+        }, 3000)
+        
+    }
+
+    socket.on("videoUpdated", function(x){
+        videoPlayer.src = x.url;
+    })
+
+    socket.on("client_connected", function(x){
+        console.log(x.data)
+        document.getElementById("owner").innerHTML = x.owner;
+    })
+
+    socket.on("clients_update", function(x){
+        if (x.state == "Playing"){
+            document.getElementById("video_player").play()
+        }else{
+            document.getElementById("video_player").pause()
+        }
+
+        videoPlayer.currentTime = x.time;
+    })
+
+    socket.on("list_updated", function(x){
+        for (i of x.list.keys()){
+            try {
+                document.getElementById(x.list[i]).innerHTML
+            }catch{
+                console.log(x.list[i])
+                s=document.getElementById("cloneMe").cloneNode(true)
+                s.innerHTML = x.list[i]
+                s.id = x.list[i]
+                document.getElementById("users").appendChild(s)
+                s.style.display = "block";
+            }
+            
+
+        }
+    })
+
+    setInterval(function(){
+        if (j == true){
+            socket.emit("update_list", {"room": document.getElementById("room_code").innerHTML})
+
+        }
+        
+    }, 2000)
+
+    document.getElementById("video_player").onpause = function(){
+        if (q == "played"){
+            socket.emit("paused", {"room": document.getElementById("room_code").innerHTML, "user": document.getElementById("user").innerHTML})
+        }
+    }
+
+    document.getElementById("video_player").onplay = function(){
+        if (q == "paused"){
+            socket.emit("played", {"room": document.getElementById("room_code").innerHTML, "user": document.getElementById("user").innerHTML})
+        }
+    }
+
+    setTimeout(function(){
+        if (document.getElementById("user").innerHTML == document.getElementById("owner").innerHTML){
+            document.getElementById("playerUrl").display = "block";
+            setInterval(function(){
+                state = ""
+
+                if (videoPlayer.paused == true){
+                    state="Paused"
+                }else{
+                    state="Playing"
+                }
+
+                console.log("State: " + state)
+
+                socket.emit("currentPlay", {"time": videoPlayer.currentTime, "state": state, "room": roomValidation})
+            }, 10000)
+        }
+    }, 5000)
+    
+    function requestVideoChange(x){
+        url = document.getElementById("url_holder").value
+        socket.emit("updateVideo", {"room": roomValidation, "url": url})
+    }
+
+    videoPlayer.onseeked = function() {
+        state = ""
+        if (videoPlayer.paused == true){
+            state="Paused"
+        }else{
+            state="Playing"
+        }
+        socket.emit("currentPlay", {"time": videoPlayer.currentTime, "state": state, "room": roomValidation})
+    };
+    
+</script>
+</html>
