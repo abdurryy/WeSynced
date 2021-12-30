@@ -97,8 +97,9 @@ video {
     background-color: transparent;
     color: white;
     width: 300px;
-    border: 2px solid #01D982;
-    border-radius: 10px;
+    border:0;
+    border-bottom: 2px solid #01D982;
+
 
 }
 

@@ -11,9 +11,8 @@
         <p id="actions"></p>
         <div style="display: flex; justify-content: center;">
             <div style="display: none;" id="playerUrl">
-                <input id="url_holder" placeholder="https://www.youtube.com/watch?v=Y7Bquwr8mQE">
+                <input id="url_holder" placeholder="https://www.example.com/video.mp4">
                 <button id="url_button" onclick="requestVideoChange()"><strong>></strong></button>
-                <button onclick="urlVisible(this)"><strong>x</strong></button>
             </div>
         </div>
         <br>
@@ -56,21 +55,6 @@
     let currentUser = undefined;
     var q = "paused";
 
-    var t = false
-
-    function urlVisible(x){
-        if (t==false) {
-            document.getElementById("url_holder").style.display = "none";
-            document.getElementById("url_button").style.display = "none";
-            x.innerHTML = "-"
-            t=true
-        }else{
-            document.getElementById("url_holder").style.display = "block";
-            document.getElementById("url_button").style.display = "block";
-            x.innerHTML = "x"
-            t=false
-        }
-    }
 
     socket.on("connect", function() {
         console.log("Connecting.")
@@ -208,7 +192,7 @@
                 console.log("State: " + state)
 
                 socket.emit("currentPlay", {"time": videoPlayer.currentTime, "state": state, "room": roomValidation})
-            }, 10000)
+            }, 30000)
         }
     }, 5000)
     
@@ -217,15 +201,6 @@
         socket.emit("updateVideo", {"room": roomValidation, "url": url})
     }
 
-    videoPlayer.onseeked = function() {
-        state = ""
-        if (videoPlayer.paused == true){
-            state="Paused"
-        }else{
-            state="Playing"
-        }
-        socket.emit("currentPlay", {"time": videoPlayer.currentTime, "state": state, "room": roomValidation})
-    };
     
     function leaveGroup(){
         socket.emit('disconnects',{"room":roomValidation, "user": currentUser})
