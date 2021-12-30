@@ -4,11 +4,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type= "text/css" href="{{ url_for('static',filename='css/room.css') }}">
-    <title>Document</title>
+    <title>WeSynced | Brings people together</title>
 </head>
 <body>
     <div id="content">
-        <p id="actions"></p>
+        <div style="display: flex; justify-content: center;">
+            <p style="text-align: center; border: 2px solid #01D982; padding: 10px; margin: 10px;border-radius: 10px; color:#01D982;" id="actions"></p>
+        </div>
+        
         <div style="display: flex; justify-content: center;">
             <div style="display: none;" id="playerUrl">
                 <input id="url_holder" placeholder="https://www.example.com/video.mp4">
