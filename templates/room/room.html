@@ -26,7 +26,7 @@
         </div>
         <div id="leaveContainer">
             <button id="invite" onclick="alert(window.location.href)" value="{{ room }}">+</button>
-            <button id="leave">Leave</button>
+            <button onclick="leaveGroup()" id="leave">Leave</button>
         </div>
         
     </div>
@@ -36,13 +36,24 @@
             <button onclick="setName()">Continue</button>
         </div>
     </div>
+
+    <div id="leftGroup" style="display: none;width: 100%; height: 100vh; position: fixed; top:0; background-color: #202124;">
+        <div style="display: flex;justify-content: center;">
+            <div style="background-color: #01D982; width:300px; padding: 20px; text-align: center; border-radius: 5px;margin-top:35vh;color: #202124;">
+                <p style="padding-bottom: 10px;">You have successfully left the group!</p>
+                <button onclick="window.location.reload()" style="background-color: #202124;color: #01D982;padding: 10px; border:0; border-radius: 10px;">Refresh</button>
+            </div>
+        </div>
+    </div>
     
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 <script>
     const socket = io();
     const videoPlayer = document.getElementById("video_player");
-    const roomValidation = document.getElementById("room_code");
+    const roomValidation = document.getElementById("room_code").innerHTML;
+    let roomHost = undefined;
+    let currentUser = undefined;
     var q = "paused";
 
     var t = false
@@ -98,6 +109,7 @@
         const username = document.getElementById("username").value
         document.getElementById("user").innerHTML = username;
         document.getElementById("choose_username").style.display = "none";
+        currentUser =  username;
         socket.emit("join", {"room": document.getElementById("room_code").innerHTML, "user": username})
         j = true;
 
@@ -116,9 +128,15 @@
         videoPlayer.src = x.url;
     })
 
+    socket.on("removUser", function(x){
+        document.getElementById(x.user.toLowerCase()).remove();
+        console.log(x.user+" left the group!")
+    })
+
     socket.on("client_connected", function(x){
         console.log(x.data)
         document.getElementById("owner").innerHTML = x.owner;
+        roomHost = document.getElementById("owner").innerHTML;
     })
 
     socket.on("clients_update", function(x){
@@ -133,15 +151,22 @@
 
     socket.on("list_updated", function(x){
         for (i of x.list.keys()){
+            
             try {
-                document.getElementById(x.list[i]).innerHTML
+                document.getElementById(x.usernames[i]).innerHTML
             }catch{
-                console.log(x.list[i])
                 s=document.getElementById("cloneMe").cloneNode(true)
                 s.innerHTML = x.list[i]
-                s.id = x.list[i]
+                s.id = x.usernames[i]
                 document.getElementById("users").appendChild(s)
                 s.style.display = "block";
+                
+
+                if (x.usernames[i] == roomHost.toLowerCase()){
+                    s.style.backgroundColor = "#01D982";
+                    s.style.color = "#202124";
+                    s.style.paddingTop = "15px";
+                }
             }
             
 
@@ -202,5 +227,14 @@
         socket.emit("currentPlay", {"time": videoPlayer.currentTime, "state": state, "room": roomValidation})
     };
     
+    function leaveGroup(){
+        socket.emit('disconnects',{"room":roomValidation, "user": currentUser})
+        document.getElementById("leftGroup").style.display = "block";
+    }
+
+    function createPopup(){
+
+    }
+
 </script>
 </html>

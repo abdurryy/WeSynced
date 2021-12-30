@@ -49,21 +49,30 @@ def join(x):
 @socketio.on("update_list")
 def update(x):
     u = []
+    d = []
     for sx in syncgroups[x["room"]]:
         try:
             xr = sx[0] + sx[1]
         except:
             xr = sx[0]
+        
+        d.append(sx.lower())
+
             
         xr = xr.upper()
         u.append(xr)
 
     
-    emit("list_updated", {"list": u}, room=x["room"])
+    emit("list_updated", {"list": u, "usernames": d }, room=x["room"])
 
 @socketio.on('disconnects')
 def disconnects(x):
+    syncgroups[x["room"]].remove(x["user"])
+    print(syncgroups)
+
     leave_room(x["room"])
+
+    socketio.emit("removUser", {"user": x["user"]}, room=x["room"])
 
 @socketio.on('paused')
 def paused(x):
