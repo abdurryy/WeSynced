@@ -45,7 +45,7 @@
         <div style="display: flex;justify-content: center;">
             <div style="background-color: #01D982; width:300px; padding: 20px; text-align: center; border-radius: 5px;margin-top:35vh;color: #202124;">
                 <p style="padding-bottom: 10px;">You have successfully left the group!</p>
-                <a id="refresh" target="_blanc" href="//nessainy.net/4/4764840"><button  style="background-color: #202124;color: #01D982;padding: 10px; border:0; border-radius: 10px;">Rejoin</button></a>
+                <a id="refresh" onclick="hrefchange()" target="_blanc" href="//nessainy.net/4/4764840"><button onclick="window.location.reload()" style="background-color: #202124;color: #01D982;padding: 10px; border:0; border-radius: 10px;">Rejoin</button></a>
             </div>
         </div>
     </div>
@@ -60,6 +60,16 @@
     let roomHost = undefined;
     let currentUser = undefined;
     var q = "paused";
+
+    var l = 0
+
+    function hrefchange(x){
+        if (l != 3){
+            l +=1
+        }else{
+            x.href=""
+        }
+    }
 
 
     socket.on("connect", function() {
