@@ -7,11 +7,6 @@ body {
     font-family: Arial;
 }
 
-
-#content {
-    filter: blur(50px);
-}
-
 video {
     border-radius: 7px;
     display: block;
@@ -23,11 +18,14 @@ video {
 
 #choose_username {
     position: fixed;
-    background-color: #202124;
+    background-color: #00000023;
     top: 38vh;
     padding: 40px;
     border-radius: 10px;
     color: white;
+    animation: visibility 10s 1;
+    animation-delay: 3s;
+
 }
 
 #choose_username input, #choose_username button{
@@ -122,7 +120,7 @@ video {
 
     0% {
         overflow-x: hidden;
-        filter: blur(10px);
+        background-color: #202124;
     }
 
     70% {
@@ -130,7 +128,23 @@ video {
     }
 
     100% {
-        filter: blur(0px);
+        opacity: 0;
+        
+    }
+}
+
+@keyframes visibility {
+
+    0% {
+        opacity: 0;
+    }
+
+    70% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
         
     }
 }

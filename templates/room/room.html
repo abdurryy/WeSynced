@@ -7,6 +7,7 @@
     <title>WeSynced | Brings people together</title>
 </head>
 <body>
+    {% include '/content/animation.html' %}
     <div id="content">
         <div style="display: flex; justify-content: center;">
             <p style="text-align: center; border: 2px solid #01D982; padding: 10px; margin: 10px;border-radius: 10px; color:#01D982;" id="actions"></p>
@@ -32,7 +33,7 @@
         </div>
         
     </div>
-    <div style="display: flex; justify-content: center;">
+    <div id="username_content" style="display: flex; justify-content: center; background-color: #202124; height:100vh; width:100%; position:fixed; top:0;">
         <div id="choose_username">
             <input id="username" autocomplete="off" autocapitalize="on" maxlength="20" placeholder="Username">
             <button onclick="setName()">Continue</button>
@@ -95,13 +96,15 @@
     function setName(){
         const username = document.getElementById("username").value
         document.getElementById("user").innerHTML = username;
-        document.getElementById("choose_username").style.display = "none";
         currentUser =  username;
         socket.emit("join", {"room": document.getElementById("room_code").innerHTML, "user": username})
         j = true;
 
-        document.getElementById("content").style.animation = "blur 2s 1";
-        document.getElementById("content").style.filter = "blur(0px)";
+        document.getElementById("username_content").style.animation = "blur 2s 1";
+        setTimeout(function(){
+            document.getElementById("username_content").style.display = "none";
+        },2000)
+        
 
         setTimeout(function(){
             if (document.getElementById("user").innerHTML == document.getElementById("owner").innerHTML){
