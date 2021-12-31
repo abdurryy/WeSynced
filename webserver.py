@@ -12,6 +12,10 @@ syncowners = {}
 def join(code):
     return render_template("room/room.html", room=code)
 
+@app.route("/")
+def index():
+    return render_template("pages/index.html")
+
 
 def random_username():
     r = random.randint(1, 5000)
